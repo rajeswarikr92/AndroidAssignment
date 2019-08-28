@@ -5,11 +5,13 @@ import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.os.Parcelable;
+import android.content.Context;
+import android.net.NetworkInfo;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.canadanews.R;
@@ -32,25 +34,22 @@ public class MainActivity extends AppCompatActivity {
     private NewsListFragment newsListFragment;
     private Boolean refresh = false;
     private ProgressDialog progressDialog;
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initView();
+        initialiseView();
         newsListViewModel = ViewModelProviders.of(MainActivity.this).get(NewsListViewModel.class);
-        registerObservers();
+        initiateObserver();
 
     }
 
-    private void initView(){
+    private void initialiseView(){
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }
 
-    private  void registerObservers(){
+    private  void initiateObserver(){
         if(!refresh)
             showProgress(true);
         if(newsListObserver == null){
@@ -72,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
                                 ArrayList<NewsListItemModel> newsListItemModelList = new ArrayList<>();
                                 for (NewsItem newsItem : newsList.newsItem) {
                                     if(newsItem.title != null || newsItem.description != null || newsItem.imageHref!= null)
-                                        newsListItemModelList.add(new NewsListItemModel(newsItem.title, newsItem.description, newsItem.imageHref));
+                                        newsListItemModelList.add(new NewsListItemModel(newsList.title,newsItem.title, newsItem.description, newsItem.imageHref));
                                 }
                                     prepareDataForTheList(newsList.title, newsListItemModelList);
 
@@ -83,7 +82,11 @@ public class MainActivity extends AppCompatActivity {
                         if (responseModel.getThrowable() != null) {
                             Throwable e = responseModel.getThrowable();
                             if (e instanceof ConnectException || e instanceof SocketTimeoutException || e instanceof NoRouteToHostException) {
-                                Toast.makeText(getApplicationContext(),R.string.error_msg,Toast.LENGTH_LONG).show();
+                                if(!isConnected()) {
+                                    Toast.makeText(getApplicationContext(), R.string.network_error_msg, Toast.LENGTH_LONG).show();
+                                }
+                                else
+                                    Toast.makeText(getApplicationContext(),R.string.error_msg,Toast.LENGTH_LONG).show();
                             }
                         }
                     }
@@ -94,6 +97,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         newsListViewModel.getNewsList();
+
+    }
+
+    private void prepareNewsListItemModel(NewsList newsList){
 
     }
 
@@ -114,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
     public void pullToRefresh(Boolean isRefresh){
         refresh = isRefresh;
         if(isRefresh)
-            registerObservers();
+            initiateObserver();
     }
 
     private void showProgress(Boolean show){
@@ -126,5 +133,18 @@ public class MainActivity extends AppCompatActivity {
             if (progressDialog != null && progressDialog.isShowing())
                 progressDialog.dismiss();
         }
+    }
+
+    public boolean isConnected(){
+        try{
+            android.net.ConnectivityManager connectivityManager = (android.net.ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+            return networkInfo != null &&  networkInfo.isConnected();
+
+        }catch (Exception e){
+            Log.e("Exception", String.valueOf(e));
+        }
+        return  false;
+
     }
 }

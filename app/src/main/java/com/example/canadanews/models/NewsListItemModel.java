@@ -4,11 +4,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class NewsListItemModel implements Parcelable {
+    private String newsTitle;
     private String title;
     private String description;
     private String imageUrl;
 
-    public NewsListItemModel(String title, String description, String imageUrl) {
+    public NewsListItemModel(String newsTitle, String title, String description, String imageUrl) {
+        this.newsTitle = newsTitle;
         this.title = title;
         this.description = description;
         this.imageUrl = imageUrl;
@@ -16,6 +18,7 @@ public class NewsListItemModel implements Parcelable {
     }
 
     protected NewsListItemModel(Parcel in) {
+        newsTitle = in.readString();
         title = in.readString();
         description = in.readString();
         imageUrl = in.readString();
@@ -42,7 +45,13 @@ public class NewsListItemModel implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
     }
 
+    public String getNewsTitle() {
+        return newsTitle;
+    }
 
+    public void setNewsTitle(String newsTitle) {
+        this.newsTitle = newsTitle;
+    }
     public String getTitle() {
         return title;
     }
