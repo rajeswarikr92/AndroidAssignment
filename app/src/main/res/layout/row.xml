@@ -1,0 +1,55 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@drawable/card_bg"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="5dp"
+    android:layout_margin="@dimen/layout_margin"
+    android:paddingRight="50dp">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/title_margin_start"
+        android:textColor="@color/title_color"
+        android:maxLines="2"
+        android:textSize="@dimen/font_size_title" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_marginBottom="@dimen/margin_bottom"
+        android:layout_height="100dp">
+
+        <TextView
+            android:layout_weight="0.4"
+            android:layout_marginStart="10dp"
+            android:id="@+id/description"
+            android:padding="@dimen/description_padding"
+            android:maxLines="5"
+            android:ellipsize="end"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:textColor="@color/des_color"
+            android:textSize="@dimen/font_size_description" />
+
+        <ImageView
+            android:layout_weight="0.6"
+            android:id="@+id/image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:scaleType="fitXY"
+            android:adjustViewBounds="true"
+            android:gravity="end"/>
+
+    </LinearLayout>
+
+
+
+
+
+</LinearLayout>

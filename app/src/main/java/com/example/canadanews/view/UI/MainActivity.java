@@ -1,12 +1,19 @@
 package com.example.canadanews.view.UI;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.app.ProgressDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
+
 import com.example.canadanews.R;
+import com.example.canadanews.models.NewsListItemModel;
 import com.example.canadanews.service.model.NewsItem;
 import com.example.canadanews.service.model.NewsList;
 import com.example.canadanews.service.model.ResponseModel;
@@ -21,6 +28,11 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private Observer newsListObserver;
     private NewsListViewModel newsListViewModel;
+    public static String KEY_DATA = "KEY_DATA";
+    private NewsListFragment newsListFragment;
+    private Boolean refresh = false;
+    private ProgressDialog progressDialog;
+
 
 
     @Override
@@ -39,23 +51,39 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private  void registerObservers(){
+        if(!refresh)
+            showProgress(true);
         if(newsListObserver == null){
             newsListObserver = new android.arch.lifecycle.Observer<ResponseModel>() {
                 @Override
                 public void onChanged(@Nullable ResponseModel responseModel) {
                     if(responseModel.isSuccess){
+                        if(!refresh)
+                            showProgress(false);
+                        else
+                            if(newsListFragment != null){
+                                newsListFragment.swipeRefreshLayout.setRefreshing(false);
+                            }
+                            refresh = false;
+
                         if(responseModel.getObject() != null){
                             NewsList newsList = (NewsList) responseModel.getObject();
                             if(newsList != null){
-                                    prepareDataForTheList(newsList);
+                                ArrayList<NewsListItemModel> newsListItemModelList = new ArrayList<>();
+                                for (NewsItem newsItem : newsList.newsItem) {
+                                    if(newsItem.title != null || newsItem.description != null || newsItem.imageHref!= null)
+                                        newsListItemModelList.add(new NewsListItemModel(newsItem.title, newsItem.description, newsItem.imageHref));
+                                }
+                                    prepareDataForTheList(newsList.title, newsListItemModelList);
 
                             }
                         }
                     }else{
+                        showProgress(false);
                         if (responseModel.getThrowable() != null) {
                             Throwable e = responseModel.getThrowable();
                             if (e instanceof ConnectException || e instanceof SocketTimeoutException || e instanceof NoRouteToHostException) {
-                                //HandleNetworkError
+                                Toast.makeText(getApplicationContext(),R.string.error_msg,Toast.LENGTH_LONG).show();
                             }
                         }
                     }
@@ -69,14 +97,34 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void prepareDataForTheList(NewsList newsList){
-        toolbar.setTitle(newsList.title);
-        ArrayList<NewsItem> dataList = new ArrayList<>();
-        for(NewsItem listItem : newsList.newsItem){
-            if(listItem.title != null || listItem.description != null || listItem.imageHref != null)
-                dataList.add(listItem);
+    private void prepareDataForTheList(String title, ArrayList<NewsListItemModel> newsListItemModelList){
+        toolbar.setTitle(title);
+        //creating listFragment
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(KEY_DATA, newsListItemModelList);
+
+        newsListFragment = new NewsListFragment();
+        newsListFragment.setArguments(bundle);
+        fragmentTransaction.replace(R.id.list_container, newsListFragment);
+        fragmentTransaction.commit();
+    }
+
+    public void pullToRefresh(Boolean isRefresh){
+        refresh = isRefresh;
+        if(isRefresh)
+            registerObservers();
+    }
+
+    private void showProgress(Boolean show){
+        if (show) {
+            progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage(getString(R.string.progress_msg));
+            progressDialog.show();
+        } else {
+            if (progressDialog != null && progressDialog.isShowing())
+                progressDialog.dismiss();
         }
-
-
     }
 }

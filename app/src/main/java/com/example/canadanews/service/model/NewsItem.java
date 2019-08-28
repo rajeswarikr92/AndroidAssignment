@@ -10,27 +10,4 @@ public class NewsItem {
     @SerializedName("imageHref")
     public String imageHref;
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(){
-        this.title = title ;
-    }
-    public String getdescription() {
-        return description;
-    }
-
-    public void setDescription(){
-        this.description = description ;
-    }
-
-    public String getImageHref() {
-        return imageHref;
-    }
-
-    public void setImageHref(){
-        this.imageHref = imageHref ;
-    }
-
 }
