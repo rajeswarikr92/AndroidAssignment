@@ -1,2 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <dimen name="epg_channel_layout_margin">3dp</dimen>
+    <dimen name="font_size_title">30dp</dimen>
+    <dimen name="font_size_description">18dp</dimen>
+    <dimen name="title_margin_start">10dp</dimen>
+    <dimen name="margin_bottom">5dp</dimen>
+    <dimen name="layout_margin">5dp</dimen>
+    <dimen name="description_padding">5dp</dimen>
+    <dimen name="linearLayout_height">10dp</dimen>
+
+
+</resources>

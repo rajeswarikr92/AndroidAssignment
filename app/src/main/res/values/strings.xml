@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">CanadaNews</string>
+    <string name="app_name">Canada News</string>
+    <string name="progress_msg">Loading</string>
+    <string name="error_msg">Please try later</string>
+    <string name="title_not_available">Title Not Available</string>
+    <string name="description_not_available">Description Not Available</string>
 </resources>
