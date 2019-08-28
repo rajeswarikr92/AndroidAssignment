@@ -12,7 +12,6 @@ import com.bumptech.glide.Glide;
 import com.example.canadanews.R;
 import com.example.canadanews.models.NewsListItemModel;
 
-
 import java.util.ArrayList;
 
 public class NewsListAdapter extends RecyclerView.Adapter<NewsListAdapter.ListViewHolder> {
